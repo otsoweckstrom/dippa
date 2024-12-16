@@ -3,51 +3,61 @@ import Part
 import Mesh
 import os
 
-def convert_step_to_stl(input_folder, output_folder):
+def convert_step_to_stl_recursive(input_folder, output_folder):
     """
-    Convert STEP/IGES files to STL using FreeCAD.
+    Recursively convert STEP/IGES files to STL and preserve directory structure.
     """
-    os.makedirs(output_folder, exist_ok=True)  # Ensure the output folder exists
+    # Ensure the output folder exists
+    os.makedirs(output_folder, exist_ok=True)
 
-    for file_name in os.listdir(input_folder):
-        if file_name.endswith(".step") or file_name.endswith(".stp") or file_name.endswith(".igs") or file_name.endswith(".iges") or file_name.endswith(".IGS"):
-            input_path = os.path.join(input_folder, file_name)
+    # Walk through all directories and files
+    for root, dirs, files in os.walk(input_folder):
+        for file_name in files:
+            if file_name.lower().endswith((".step", ".stp", ".igs", ".iges")):
+                input_path = os.path.join(root, file_name)
 
-            # Ensure the output file has the correct STL extension
-            output_file_base = file_name.replace(".step", ".stl").replace(".stp", ".stl").replace(".igs", ".stl").replace(".iges", ".stl").replace(".IGS", ".stl")
-            output_path = os.path.join(output_folder, output_file_base)
+                # Build the relative path and output path
+                relative_path = os.path.relpath(root, input_folder)
+                output_dir = os.path.join(output_folder, relative_path)
+                os.makedirs(output_dir, exist_ok=True)
 
-            try:
-                # Load the file as a Part object
-                doc = FreeCAD.newDocument()
-                part = None
+                # Generate output file path with .stl extension
+                output_file_base = os.path.splitext(file_name)[0] + ".stl"
+                output_path = os.path.join(output_dir, output_file_base)
 
-                if file_name.endswith(".step") or file_name.endswith(".stp"):
-                    part = Part.read(input_path)
-                elif file_name.endswith(".igs") or file_name.endswith(".iges"):
-                    part = Part.read(input_path)
+                try:
+                    print(f"Processing: {input_path}")
+                    # Create a new FreeCAD document
+                    doc = FreeCAD.newDocument()
+                    part = None
 
-                if part is None:
-                    print(f"Failed to load geometry for file: {input_path}")
-                    continue
+                    # Load the file as a Part object
+                    if file_name.lower().endswith((".step", ".stp")):
+                        part = Part.read(input_path)
+                    elif file_name.lower().endswith((".igs", ".iges")):
+                        part = Part.read(input_path)
 
-                # Add the part to the FreeCAD document
-                part_feature = doc.addObject("Part::Feature", "Part")
-                part_feature.Shape = part
+                    if part is None:
+                        print(f"Failed to load geometry for file: {input_path}")
+                        continue
 
-                # Export as STL
-                Mesh.export([part_feature], output_path)
-                print(f"Converted: {input_path} -> {output_path}")
+                    # Add the part to the FreeCAD document
+                    part_feature = doc.addObject("Part::Feature", "Part")
+                    part_feature.Shape = part
 
-                # Close the FreeCAD document
-                FreeCAD.closeDocument(doc.Name)
+                    # Export as STL
+                    Mesh.export([part_feature], output_path)
+                    print(f"Converted: {input_path} -> {output_path}")
 
-            except Exception as e:
-                print(f"Error processing file {input_path}: {e}")
+                    # Close the FreeCAD document
+                    FreeCAD.closeDocument(doc.Name)
+
+                except Exception as e:
+                    print(f"Error processing file {input_path}: {e}")
 
 # Define input and output folders
-input_folder = r"C:\Users\Otso\Desktop\Directory\LUT opinnot\Dippa\codes\CAD_models"
-output_folder = r"C:\Users\Otso\Desktop\Directory\LUT opinnot\Dippa\codes\converted_models"
+input_folder = r"C:\AI2CAD"  # Parent folder containing STEP/IGES files
+output_folder = r"C:\AI2CAD\stl_conversion_output"  # Output folder for converted STL files
 
 # Run the conversion
-convert_step_to_stl(input_folder, output_folder)
+convert_step_to_stl_recursive(input_folder, output_folder)
