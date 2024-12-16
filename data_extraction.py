@@ -64,8 +64,8 @@ def extract_features(parent_folder, output_csv):
         print("No STL files found!")
 
 # Define parent folder and output CSV file
-parent_folder = r"C:\AI2CAD"  # r"C:\AI2CAD\stl_conversion_output" for converted stp_files
-output_csv = r"C:\AI2CAD\output\features.csv" # r"C:\AI2CAD\output\stp_features.csv" for outputting the converted stp_files data
+parent_folder = r"C:\AI2CAD\AI2CAD_Y_FILES"  # r"C:\AI2CAD\stl_conversion_output" for converted stp_files
+output_csv = r"C:\AI2CAD\output\Y_features.csv" # r"C:\AI2CAD\output\stp_features.csv" for outputting the converted stp_files data
 
 # Run feature extraction
 extract_features(parent_folder, output_csv)
