@@ -6,9 +6,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
 
 # Load the dataset
-final_dataset = pd.read_csv("SyntheticFeatures.csv")  # Replace with your dataset file if needed
+final_dataset = pd.read_csv("Synthetic_CAD_Data.csv")  # Replace with your dataset file if needed
 
 # Drop non-numeric columns
 X = final_dataset.drop(columns=["file_name", "profitable"])
@@ -21,15 +22,19 @@ X_scaled = scaler.fit_transform(X)
 # Split the dataset into training (80%) and test (20%)
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
+# Apply SMOTE to the training set (for balancing)
+smote = SMOTE(sampling_strategy='auto', random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+
 # Train models
 models = {
     "Logistic Regression": LogisticRegression(),
     "Random Forest": RandomForestClassifier(
-    n_estimators=50,        # Fewer trees to prevent overfitting
-    max_depth=5,            # Limit depth to avoid memorization
-    min_samples_split=5,     # Minimum samples to split a node
-    random_state=42
-),
+        n_estimators=50,        # Fewer trees to prevent overfitting
+        max_depth=5,            # Limit depth to avoid memorization
+        min_samples_split=5,    # Minimum samples to split a node
+        random_state=42
+    ),
 }
 
 # Store results
@@ -37,7 +42,7 @@ results = {}
 feature_importances = {}
 
 for name, model in models.items():
-    model.fit(X_train, y_train)
+    model.fit(X_train_resampled, y_train_resampled)  # Train with resampled data
     y_pred = model.predict(X_test)
     y_prob = model.predict_proba(X_test)[:, 1]  # Probability estimates for ROC-AUC
 
@@ -70,3 +75,6 @@ if "Random Forest" in feature_importances:
     plt.xlabel("Feature Importance")
     plt.title("Random Forest Feature Importance")
     plt.show()
+
+print("Random Forest Feature Importance:")
+print(pd.DataFrame({"Feature": feature_names, "Importance": importance_values}))
