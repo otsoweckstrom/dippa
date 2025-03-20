@@ -88,9 +88,9 @@ from sklearn.metrics import classification_report
 
 # Train the Random Forest model
 rf_model = RandomForestClassifier(
-    n_estimators=50,
-    max_depth=5,
-    min_samples_split=5,
+    n_estimators=100,   # Increase trees for stability
+    max_depth=5,        # Reduce depth to control overfitting
+    min_samples_split=10,  # Reduce overfitting by requiring more samples per split
     random_state=42
 )
 rf_model.fit(X_train_resampled, y_train_resampled)
