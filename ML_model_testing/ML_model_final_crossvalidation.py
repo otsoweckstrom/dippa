@@ -35,8 +35,8 @@ X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 models = {
     "Logistic Regression": LogisticRegression(),
     "Random Forest": RandomForestClassifier(
-        n_estimators=100,        # Fewer trees to prevent overfitting
-        max_depth=10,            # Limit depth to avoid memorization
+        n_estimators=50,        # Fewer trees to prevent overfitting
+        max_depth=5,            # Limit depth to avoid memorization
         min_samples_split=5,    # Minimum samples to split a node
         random_state=42
     ),
