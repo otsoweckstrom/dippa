@@ -22,17 +22,15 @@ X = final_dataset.drop(columns=["file_name", "profitable",
 y = final_dataset["profitable"]
 feature_names = X.columns.tolist() # Store feature names for later use
 
-# 1. Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y) # Added stratify=y
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y) 
 
-# 2. Scale the features 
+# Scale the features 
 scaler = StandardScaler()
-# Fit the scaler ONLY on the training data
 X_train_scaled = scaler.fit_transform(X_train)
-# Transform the test data using the SAME fitted scaler
 X_test_scaled = scaler.transform(X_test)
 
-# 3. Apply SMOTE ONLY to the training data
+# Apply SMOTE 
 print(f"Original training set shape: {X_train_scaled.shape}")
 print(f"Original training set distribution:\n{y_train.value_counts()}")
 smote = SMOTE(sampling_strategy='auto', random_state=42)
@@ -93,7 +91,7 @@ for name, model in models.items():
          pass
 
 # --- Cross-Validation ---
-print("\n--- Performing Cross-Validation (on resampled train data) ---")
+print("\n--- Performing Cross-Validation  ---")
 cv_results = {}
 for name, model in models.items():
     if name in ["Random Forest", "XGBoost"]: 
