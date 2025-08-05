@@ -115,7 +115,7 @@ print("\n--- Confusion Matrices on Test Set ---")
 for name, cm in confusion_matrices.items():
     print(f"\nConfusion Matrix for {name}:")
     print(cm)
-    # Optional: Plot confusion matrix
+
     plt.figure(figsize=(6, 4))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Predicted Not Profitable', 'Predicted Profitable'], yticklabels=['Actual Not Profitable', 'Actual Profitable'])
     plt.title(f'Confusion Matrix: {name}')
@@ -140,4 +140,17 @@ for model_name in ["Random Forest", "XGBoost"]:
         plt.tight_layout() 
         plt.show()
 
+
+corr = X.corr()
+plt.figure(figsize=(12, 10))  
+sns.heatmap(corr, cmap='coolwarm', annot=True, fmt=".2f")
+plt.title("Feature Correlation Matrix")
+plt.show()
+
+print(f"Test set distribution:\n{y_test.value_counts()}")
+
 print("\n--- Script Finished ---")
+
+
+
+
